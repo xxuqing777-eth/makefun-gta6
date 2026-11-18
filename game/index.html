@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#123b43">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./style.css">
+  <title>Solmaris — A City of Second Chances</title>
+  <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js"}}</script>
+</head>
+<body>
+  <canvas id="game" aria-label="Solmaris third-person open world"></canvas>
+  <div id="hud" hidden>
+    <div id="xp" class="eyebrow accent">0 XP · RANK 1</div>
+    <header><div class="eyebrow accent">A city of second chances</div><h1>SOLMARIS</h1></header>
+    <div id="stats"><div class="eyebrow">JAX MORENO</div><div id="wanted" aria-label="Wanted level 0 of 5">☆☆☆☆☆</div><strong id="money">$0</strong><label>HEALTH <progress id="health" max="100" value="100"></progress></label></div>
+    <div id="map-panel"><canvas id="minimap" width="220" height="220" aria-label="North-up minimap showing roads, buildings, coast and your heading"></canvas><div class="eyebrow accent" id="district-name">East Solmaris</div></div>
+    <div id="objective"><span class="eyebrow accent">STORY / ON FOOT</span><strong>Back on familiar streets.</strong><span id="vehicle-hint">Explore the coast as Jax Moreno.</span></div>
+    <div id="dialogue" role="status"></div>
+    <div id="hints"><strong id="speed">0 KM/H</strong><span>WASD MOVE · SHIFT RUN · SPACE JUMP</span><span id="weapon">FISTS · Q SWITCH</span><span id="pursuit">CLEAR</span><span>MOUSE LOOK · LEFT CLICK ATTACK · R RELOAD · ESC PAUSE</span></div>
+    <div id="crosshair" aria-hidden="true">+</div>
+  </div>
+  <section id="start-screen" aria-labelledby="menu-title">
+    <div class="menu-card">
+      <div class="eyebrow accent">SOLMARIS / COASTAL STORIES</div>
+      <h2 id="menu-title">EVERY STREET.<br>A SECOND CHANCE.</h2>
+      <p>Jax Moreno is back on the coast. Take the long way home through sunlit avenues, downtown towers and the waterfront.</p>
+      <button id="start-button" disabled>ENTER SOLMARIS <span>→</span></button>
+      <p id="menu-hint">Click to capture your mouse. Esc releases it and pauses.</p>
+      <div class="control-grid"><span><b>W A S D</b>Move</span><span><b>MOUSE</b>Look</span><span><b>SHIFT</b>Run</span><span><b>SPACE</b>Jump</span></div>
+      <p>E enter / steal / exit · Driving: W / S accelerate / brake / reverse, A / D steer, Space handbrake, 1 / 2 / 3 chase / high / hood cameras.</p>
+      <p>Q switches fists / pistol · Left-click attacks straight ahead · R reloads. Vultures in purple guard the east avenue north of your start. Crime raises 1–5 wanted stars; break police sight behind buildings to cool down. Keep moving to avoid arrest.</p>
+      <p>F talks to Lena / interacts at gold beacons · M mutes sound. Complete four story jobs to earn money and XP. Escape police by breaking sight behind buildings.</p>
+      <div class="menu-actions"><button id="save-button">SAVE</button><button id="load-button">LOAD SAVE</button><button id="new-button">NEW STORY</button><button id="mute-button">SOUND: ON</button></div>
+      <p id="save-message" role="status">Autosave after each job. Loading restores rewards and restarts active jobs at Lena.</p>
+      <div class="eyebrow build">A CITY OF SECOND CHANCES / STORY EDITION</div>
+    </div>
+  </section>
+  <p id="status" role="status" aria-live="polite">Loading Solmaris.</p>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

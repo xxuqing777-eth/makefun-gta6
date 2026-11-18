@@ -1,0 +1,84 @@
+import assert from 'node:assert/strict';
+import { registerHooks } from 'node:module';
+registerHooks({ resolve(specifier, context, nextResolve) {
+  return nextResolve(specifier === 'three' ? new URL('../game/vendor/three.module.min.js', import.meta.url).href : specifier, context);
+} });
+const THREE = await import('three');
+const { createCity } = await import('../game/src/city.js');
+const { createPlayer } = await import('../game/src/player.js');
+const { createVehicles } = await import('../game/src/vehicles.js');
+const { createWanted } = await import('../game/src/wanted.js');
+const { createCombat } = await import('../game/src/combat.js');
+const { createPolice } = await import('../game/src/police.js');
+const { createMissions } = await import('../game/src/missions.js');
+const { createSave } = await import('../game/src/save.js');
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera();
+const colliders = createCity().userData.colliders;
+const player = createPlayer(scene, camera, colliders);
+const vehicles = createVehicles(scene, camera, player, colliders);
+const wanted = createWanted(player.state);
+vehicles.onCrime = wanted.crime;
+const combat = createCombat(scene, player, vehicles, { people: [] }, colliders, wanted);
+const police = createPolice(scene, player, vehicles, colliders, wanted, () => {});
+const missions = createMissions(scene, player, vehicles, wanted, combat);
+const memory = new Map();
+const storage = { setItem: (key, value) => memory.set(key, value), getItem: key => memory.get(key) || null };
+const save = createSave(player, vehicles, wanted, police, missions, storage);
+missions.onComplete = save.write;
+const tick = seconds => { for (let frame = 0; frame < seconds * 60; frame++) { combat.update(1 / 60); missions.update(1 / 60); } };
+const go = (positionX, positionZ) => {
+  player.state.position.set(positionX, 0.4, positionZ);
+  if (vehicles.current) { vehicles.current.position.set(positionX, 0.12, positionZ); vehicles.current.speed = 0; }
+};
+missions.interact();
+assert.equal(missions.progress.stage, 1);
+missions.interact();
+assert.equal(player.state.money, 0);
+vehicles.interact(); missions.update(0);
+assert.equal(missions.progress.stage, 2);
+go(96, 96); missions.interact();
+assert.equal(missions.progress.index, 1);
+assert.equal(player.state.money, 400);
+go(144, 80); missions.interact();
+assert.equal(player.state.wanted, 2);
+for (let frame = 0; frame < 25 * 60; frame++) { wanted.update(1 / 60, false); missions.update(1 / 60); }
+assert.equal(missions.progress.index, 2);
+assert.equal(player.state.money, 1100);
+missions.interact(); missions.interact();
+assert.equal(missions.progress.stage, 2);
+go(96, 0); missions.interact();
+assert.equal(missions.progress.stage, 3);
+vehicles.release();
+combat.switchWeapon();
+for (const guard of combat.enemies.slice(0, 2)) {
+  go(guard.model.position.x, guard.model.position.z + 4);
+  player.state.yaw = 0;
+  for (let shot = 0; shot < 3; shot++) { assert(combat.attack()); tick(0.3); }
+  assert.equal(guard.health, 0);
+}
+assert.equal(missions.progress.index, 3);
+assert.equal(player.state.money, 2300);
+go(144, 80); missions.interact();
+go(-48, -48); missions.interact();
+assert.equal(player.state.wanted, 3);
+go(144, 96); missions.interact();
+assert.equal(missions.progress.index, 3, 'Cannot deliver with wanted stars');
+for (let frame = 0; frame < 37 * 60; frame++) wanted.update(1 / 60, false);
+missions.interact();
+assert.equal(missions.progress.index, 4);
+assert.equal(player.state.money, 4800);
+assert.equal(player.state.xp, 1250);
+missions.interact(); missions.update(1);
+assert.equal(player.state.money, 4800, 'Rewards never duplicated');
+player.state.money = 0; save.load();
+assert.equal(player.state.money, 4800);
+assert.equal(missions.progress.index, 4);
+save.newGame(); assert.equal(player.state.xp, 0);
+missions.interact(); missions.fail(); assert.equal(missions.progress.stage, 0);
+missions.interact(); save.write(); save.load(); assert.equal(missions.progress.stage, 0, 'Active mission restarts safely');
+storage.setItem('solmaris.story.v1', '{bad'); assert.equal(save.read(), null);
+storage.setItem('solmaris.story.v1', JSON.stringify({ version: 1, index: 99, money: -1, xp: 0 })); assert.equal(save.read(), null);
+const blocked = createSave(player, vehicles, wanted, police, missions, { setItem() { throw Error(); }, getItem() { throw Error(); } });
+assert.match(blocked.write(), /unavailable/); assert.equal(blocked.read(), null);
+console.log('PASS Phase C: all four stories, real combat, objectives, exact rewards, no double rewards, failure/retry, save/load, active-job restart, invalid/blocked storage.');
