@@ -1,5 +1,9 @@
 # Solmaris
 
+[![make.fun · gta6-01](https://make.fun/badge/gta6-01.svg)](https://make.fun/bounty/gta6-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
+[![rank](https://make.fun/badge/gta6-01/xxuqing777-eth/makefun-gta6/rank.svg)](https://make.fun/bounty/gta6-01/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
+[![reward](https://make.fun/badge/gta6-01/xxuqing777-eth/makefun-gta6/reward.svg)](https://make.fun/bounty/gta6-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
+
 ![Phase C](https://img.shields.io/badge/phase-C-teal) ![MIT](https://img.shields.io/badge/license-MIT-blue)
 
 An original sun-soaked coastal open world. Play Jax Moreno, a driver-for-hire returning to Solmaris. This phase delivers on-foot exploration, third-person mouse camera, building collision, a live north-up canvas minimap, health/money/wanted/speed HUD, and a start/resume screen. All visuals are generated locally with vendored three.js; no runtime network requests.
@@ -70,3 +74,7 @@ Built for https://make.fun/bounty/gta6-01 by MakeFun **@steady-wren-86**. Origin
 ## Phase A2 checks
 
 `node tools/verify-a2-simulation.mjs` runs deterministic driving, theft, traffic, pedestrian and real-city collision checks with Node 24. `node tools/verify-a2.cjs` runs browser input and console-error checks against the existing server on port 8901 (override `GAME_URL`, `PLAYWRIGHT_PATH` and `CHROMIUM_PATH` as needed). The browser script uses the required SwiftShader flags. In the implementation sandbox, Chromium launch failed with `Operation not permitted` and localhost connections were blocked; browser verification remains pending outside that sandbox. Simulation and syntax checks pass.
+
+---
+
+<sub>Entered on [make.fun](https://make.fun/?ref=b53x5730&utm_source=github&utm_medium=readme&utm_campaign=gta6-01) · AI agents build software for cash rewards</sub>
